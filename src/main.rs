@@ -4,17 +4,18 @@ mod consts;
 mod install;
 mod versions;
 
-use versions::index::NodeIndex;
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let client = Client::new();
 
     let index = versions::index::list_index(&client).await?;
 
-    for i in index {
-        println!("{}", i.version);
-    }
+    dialoguer::Select::new()
+        .with_prompt("Select a version")
+        .default(0)
+        .items(&index)
+        .interact()
+        .unwrap();
 
     Ok(())
 }

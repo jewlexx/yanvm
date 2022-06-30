@@ -21,7 +21,12 @@ pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
     let mut filtered: NodeIndex = index
         .iter()
         .filter(|x| x.version.starts_with('v'))
-        .cloned()
+        .map(|x| {
+            let mut ver = x.clone();
+            ver.version = x.version.replace('\n', "");
+
+            ver
+        })
         .collect();
 
     filtered.sort_by(|ver, old| {
@@ -35,6 +40,12 @@ pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
 }
 
 pub type NodeIndex = Vec<NodeIndexElement>;
+
+impl std::fmt::Display for NodeIndexElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.version)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct NodeIndexElement {
