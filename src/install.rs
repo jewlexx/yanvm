@@ -1,4 +1,4 @@
-use std::{cmp::min, fs::File, io::Write, path::PathBuf};
+use std::{cmp::min, fs::File, io::Write};
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};

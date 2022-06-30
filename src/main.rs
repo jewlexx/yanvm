@@ -1,18 +1,18 @@
-use futures_util::FutureExt;
 use reqwest::Client;
 
-use crate::{install::download_binary, versions::installer_link};
+use crate::install::download_binary;
 
 mod consts;
 mod install;
 mod versions;
 
-fn main() {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let client = Client::new();
 
     let version = (16, 15, 1);
 
-    let fut = download_binary(&client, version, versions::Arch::X64);
+    download_binary(&client, version, versions::Arch::X64).await?;
 
-    fut.poll_unpin(cx);
+    Ok(())
 }
