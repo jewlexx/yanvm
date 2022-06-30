@@ -1,12 +1,18 @@
-use crate::versions::installer_link;
+use futures_util::FutureExt;
+use reqwest::Client;
+
+use crate::{install::download_binary, versions::installer_link};
 
 mod consts;
+mod install;
 mod versions;
 
 fn main() {
+    let client = Client::new();
+
     let version = (16, 15, 1);
 
-    let install = installer_link(version, versions::Arch::X64);
+    let fut = download_binary(&client, version, versions::Arch::X64);
 
-    println!("{}", install);
+    fut.poll_unpin(cx);
 }

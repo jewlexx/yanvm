@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub enum Arch {
     X86,
     X64,
