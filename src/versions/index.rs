@@ -28,7 +28,7 @@ pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
         let ver = parse_version(ver.version.replace('v', ""));
         let old = parse_version(old.version.replace('v', ""));
 
-        ver.cmp(&old)
+        ver.cmp(&old).reverse()
     });
 
     Ok(filtered)
