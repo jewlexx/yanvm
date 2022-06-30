@@ -1,3 +1,5 @@
+pub mod index;
+
 #[derive(Copy, Clone)]
 pub enum Arch {
     X86,

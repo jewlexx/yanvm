@@ -1,18 +1,20 @@
 use reqwest::Client;
 
-use crate::install::download_binary;
-
 mod consts;
 mod install;
 mod versions;
+
+use versions::index::NodeIndex;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let client = Client::new();
 
-    let version = (16, 15, 1);
+    let index = versions::index::list_index(&client).await?;
 
-    download_binary(&client, version, versions::Arch::X64).await?;
+    for i in index {
+        println!("{}", i.version);
+    }
 
     Ok(())
 }
