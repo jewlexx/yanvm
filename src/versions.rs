@@ -16,14 +16,15 @@ impl std::fmt::Display for Arch {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Version {
-    major: u32,
-    minor: u32,
-    patch: u32,
+    major: i32,
+    minor: i32,
+    patch: i32,
 }
 
 impl Version {
-    fn new(major: u32, minor: u32, patch: u32) -> Self {
+    fn new(major: i32, minor: i32, patch: i32) -> Self {
         Self {
             major,
             minor,
@@ -32,13 +33,13 @@ impl Version {
     }
 }
 
-impl From<(u32, u32, u32)> for Version {
-    fn from(tuple: (u32, u32, u32)) -> Self {
+impl From<(i32, i32, i32)> for Version {
+    fn from(tuple: (i32, i32, i32)) -> Self {
         Self::new(tuple.0, tuple.1, tuple.2)
     }
 }
 
-impl From<Version> for (u32, u32, u32) {
+impl From<Version> for (i32, i32, i32) {
     fn from(version: Version) -> Self {
         (version.major, version.minor, version.patch)
     }
@@ -55,4 +56,11 @@ pub fn parse_installer(ver: impl Into<Version>, arch: Arch) -> String {
     let version: Version = ver.into();
 
     format!("node-{version}-{os}-{arch}.{ext}")
+}
+
+pub fn installer_link(ver: impl Into<Version>, arch: Arch) -> String {
+    let version: Version = ver.into();
+    let installer = parse_installer(version, arch);
+
+    format!("https://nodejs.org/dist/{version}/{installer}")
 }
