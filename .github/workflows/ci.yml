@@ -18,16 +18,16 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Cargo Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+
       - name: Run cargo clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: -- -D warnings
-
-      - name: Cargo Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
