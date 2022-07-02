@@ -9,7 +9,7 @@ pub struct Config {
     pub current: Option<String>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, PartialEq, Eq)]
 pub struct Version {
     pub major: u32,
     pub minor: u32,

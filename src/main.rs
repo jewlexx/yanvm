@@ -9,8 +9,13 @@ mod versions;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let config = Config::init()?;
+
+    if config.versions == vec![] {
+        println!("No versions installed. Please run `yanvm install` to install a NodeJS version.")
+    }
+
     if config.current == None {
-        println!("No current version set");
+        println!("No current version set. Please run `yanvm set` to set a current version.");
         return Ok(());
     }
 
