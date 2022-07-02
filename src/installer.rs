@@ -5,12 +5,22 @@ use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
 use crate::{
-    helpers::ToError,
+    helpers::{NoneError, ToError},
     versions::{
         index::{list_index, parse_version, LtsUnion},
         Arch, Version,
     },
 };
+
+#[derive(Debug, thiserror::Error)]
+pub enum InstallError {
+    #[error("{0}")]
+    NoneError(#[from] NoneError),
+    #[error("{0}")]
+    Reqwest(#[from] reqwest::Error),
+    #[error("Failed to interact with IO: {0}")]
+    Io(#[from] std::io::Error),
+}
 
 pub struct Installer {
     version: Version,
@@ -34,7 +44,7 @@ impl Installer {
         format!("node-{}-{os}-{}.{ext}", self.version, self.arch)
     }
 
-    pub async fn lts_version() -> anyhow::Result<Self> {
+    pub async fn lts_version() -> Result<Self, InstallError> {
         let index = list_index().await?;
         let version_string = index
             .iter()
@@ -49,7 +59,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn latest_version() -> anyhow::Result<Self> {
+    pub async fn latest_version() -> Result<Self, InstallError> {
         let index = list_index().await?;
 
         let version: Version = parse_version(&index[0].version).into();
@@ -59,7 +69,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self, client: &Client) -> anyhow::Result<()> {
+    pub async fn download_binary(&self, client: &Client) -> Result<(), InstallError> {
         let link = self.get_installer_link();
 
         let res = client.get(link.clone()).send().await?;
