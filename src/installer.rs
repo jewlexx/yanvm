@@ -1,4 +1,4 @@
-use std::{cmp::min, fs::File, io::Write};
+use std::{cmp::min, fs::File, io::Write, path::PathBuf};
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
@@ -77,7 +77,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self) -> Result<(), InstallError> {
+    pub async fn download_binary(&self, base_path: PathBuf) -> Result<(), InstallError> {
         let link = self.get_installer_link();
 
         let res = CLIENT.get(link.clone()).send().await?;
@@ -91,7 +91,7 @@ impl Installer {
         .progress_chars("#>-"));
         pb.set_message(format!("Downloading {}", self.version));
 
-        let path = self.parse_installer();
+        let path = base_path.join(self.parse_installer());
 
         // download chunks
         let mut file = File::create(path.clone())?;
@@ -106,7 +106,7 @@ impl Installer {
             pb.set_position(new);
         }
 
-        pb.finish_with_message(format!("Downloaded {} to {}", link, path));
+        pb.finish_with_message(format!("Downloaded {} to {}", link, path.display()));
         Ok(())
     }
 }
