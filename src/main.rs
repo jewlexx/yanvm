@@ -35,8 +35,7 @@ async fn main() -> anyhow::Result<()> {
         .with_prompt("Select a version")
         .default(0)
         .items(&index)
-        .interact()
-        .unwrap();
+        .interact()?;
 
     Ok(())
 }
