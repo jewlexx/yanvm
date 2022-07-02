@@ -52,7 +52,7 @@ impl std::fmt::Display for NodeIndexElement {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct NodeIndexElement {
     pub version: String,
     pub date: String,
@@ -72,6 +72,12 @@ pub struct NodeIndexElement {
 pub enum LtsUnion {
     Bool(bool),
     Enum(LtsEnum),
+}
+
+impl Default for LtsUnion {
+    fn default() -> Self {
+        LtsUnion::Bool(false)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -163,5 +169,43 @@ mod tests {
         assert_eq!(parse_version("v1.2.3"), 0x010203);
 
         assert_eq!(parse_version("v16.15.1"), 0x100F01);
+    }
+
+    #[test]
+    fn test_sort_index() {
+        let mut index = vec![
+            NodeIndexElement {
+                version: "v1.2.1".to_string(),
+                ..Default::default()
+            },
+            NodeIndexElement {
+                version: "v1.2.3".to_string(),
+                ..Default::default()
+            },
+            NodeIndexElement {
+                version: "v1.2.2".to_string(),
+                ..Default::default()
+            },
+        ];
+
+        sort_index(&mut index);
+
+        assert_eq!(
+            index,
+            vec![
+                NodeIndexElement {
+                    version: "v1.2.3".to_string(),
+                    ..Default::default()
+                },
+                NodeIndexElement {
+                    version: "v1.2.2".to_string(),
+                    ..Default::default()
+                },
+                NodeIndexElement {
+                    version: "v1.2.1".to_string(),
+                    ..Default::default()
+                },
+            ]
+        );
     }
 }
