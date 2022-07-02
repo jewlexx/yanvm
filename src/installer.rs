@@ -47,6 +47,16 @@ impl Installer {
         Ok(installer)
     }
 
+    pub async fn latest_version() -> anyhow::Result<Self> {
+        let index = list_index().await?;
+
+        let version: Version = parse_version(&index[0].version).into();
+
+        let installer = Installer::new(version, Arch::new());
+
+        Ok(installer)
+    }
+
     pub async fn download_binary(&self, client: &Client) -> anyhow::Result<()> {
         let link = self.get_installer_link();
 
