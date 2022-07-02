@@ -1,7 +1,8 @@
 use std::fs::{create_dir_all, read_to_string};
 
-use anyhow::Context;
 use serde::{Deserialize, Serialize};
+
+use crate::helpers::ToError;
 
 #[derive(Deserialize, Serialize)]
 pub struct Config {
@@ -18,15 +19,14 @@ pub struct Version {
 
 impl Config {
     pub fn init() -> anyhow::Result<Self> {
-        let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm")
-            .context("failed to get user directories")?;
+        let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm").to_error()?;
 
         let prefs_path = dirs.preference_dir();
 
         let config_path = prefs_path.join("config.toml");
 
         if !prefs_path.exists() {
-            create_dir_all(prefs_path).context("failed to create config directory")?;
+            create_dir_all(prefs_path)?;
         }
 
         if config_path.exists() {

@@ -1,13 +1,15 @@
 use std::{cmp::min, fs::File, io::Write};
 
-use anyhow::Context;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
-use crate::versions::{
-    index::{list_index, parse_version, LtsUnion},
-    Arch, Version,
+use crate::{
+    helpers::ToError,
+    versions::{
+        index::{list_index, parse_version, LtsUnion},
+        Arch, Version,
+    },
 };
 
 pub struct Installer {
@@ -37,7 +39,7 @@ impl Installer {
         let version_string = index
             .iter()
             .find(|i| i.lts != LtsUnion::Bool(false))
-            .context("could not find any valid lts version")?
+            .to_error()?
             .version
             .to_string();
 

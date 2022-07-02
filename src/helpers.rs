@@ -4,7 +4,7 @@ pub enum NoneError {
     NoneError,
 }
 
-trait ToError<T> {
+pub trait ToError<T> {
     fn to_error(self) -> Result<T, NoneError>;
 }
 
