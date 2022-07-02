@@ -33,15 +33,23 @@ impl Installer {
     }
 
     pub fn get_installer_link(&self) -> String {
-        let installer = self.parse_installer();
-
-        format!("https://nodejs.org/dist/{}/{installer}", self.version)
+        format!(
+            "https://nodejs.org/dist/{}/{installer}",
+            self.version,
+            installer = self.parse_installer()
+        )
     }
 
     pub fn parse_installer(&self) -> String {
         let (os, ext) = crate::consts::OS_STR;
 
-        format!("node-{}-{os}-{}.{ext}", self.version, self.arch)
+        format!(
+            "node-{}-{os}-{}.{ext}",
+            self.version,
+            self.arch,
+            os = os,
+            ext = ext
+        )
     }
 
     pub async fn lts_version() -> Result<Self, InstallError> {
@@ -126,7 +134,7 @@ mod tests {
 
         assert_eq!(
             installer.get_installer_link(),
-            format!("node-v1.2.3-{os}-x64.{ext}")
+            format!("node-v1.2.3-{os}-x64.{ext}", os = os, ext = ext)
         );
     }
 }
