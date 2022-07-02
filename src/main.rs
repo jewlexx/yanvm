@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 mod consts;
-mod install;
+mod installer;
 mod versions;
 
 #[tokio::main]
