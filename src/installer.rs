@@ -89,7 +89,7 @@ impl Installer {
         pb.set_style(ProgressStyle::default_bar()
         .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
         .progress_chars("#>-"));
-        pb.set_message(format!("Downloading {}", link));
+        pb.set_message(format!("Downloading {}", self.version));
 
         let path = self.parse_installer();
 
