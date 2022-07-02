@@ -10,6 +10,15 @@ fn parse_version(ver: String) -> u32 {
     (major << 16) | (minor << 8) | patch
 }
 
+fn sort_index(unsorted: &mut NodeIndex) {
+    unsorted.sort_by(|ver, old| {
+        let ver = parse_version(ver.version.replace('v', ""));
+        let old = parse_version(old.version.replace('v', ""));
+
+        ver.cmp(&old).reverse()
+    });
+}
+
 pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
     let index: NodeIndex = client
         .get("https://nodejs.org/dist/index.json")
@@ -29,12 +38,7 @@ pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
         })
         .collect();
 
-    filtered.sort_by(|ver, old| {
-        let ver = parse_version(ver.version.replace('v', ""));
-        let old = parse_version(old.version.replace('v', ""));
-
-        ver.cmp(&old).reverse()
-    });
+    sort_index(&mut filtered);
 
     Ok(filtered)
 }
