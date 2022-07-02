@@ -5,7 +5,6 @@ use versions::index::list_index;
 mod args;
 mod config;
 mod consts;
-mod errors;
 mod helpers;
 mod installer;
 mod versions;
