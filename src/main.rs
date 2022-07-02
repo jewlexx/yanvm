@@ -32,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
 
     let version = Installer::latest_version().await?;
 
-    version.download_binary(std::env::current_dir()?).await?;
+    let bytes = version.download_binary(std::env::current_dir()?).await?;
 
     // let index = list_index().await?;
 

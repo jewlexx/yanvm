@@ -77,7 +77,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self, base_path: PathBuf) -> Result<(), InstallError> {
+    pub async fn download_binary(&self, base_path: PathBuf) -> Result<Vec<u8>, InstallError> {
         let link = self.get_installer_link();
 
         let res = CLIENT.get(link.clone()).send().await?;
@@ -94,20 +94,23 @@ impl Installer {
         let path = base_path.join(self.parse_installer());
 
         // download chunks
-        let mut file = File::create(path.clone())?;
+        // let mut file = File::create(path.clone())?;
         let mut downloaded: u64 = 0;
         let mut stream = res.bytes_stream();
 
+        let mut bytes: Vec<u8> = Vec::new();
+
         while let Some(item) = stream.next().await {
             let chunk = item?;
-            file.write_all(&chunk)?;
+            let iter = chunk.iter();
+            bytes.append(&mut iter.copied().collect::<Vec<u8>>());
             let new = min(downloaded + (chunk.len() as u64), total_size);
             downloaded = new;
             pb.set_position(new);
         }
 
         pb.finish_with_message(format!("Downloaded {} to {}", link, path.display()));
-        Ok(())
+        Ok(bytes)
     }
 }
 
