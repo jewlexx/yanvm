@@ -67,3 +67,24 @@ pub fn installer_link(ver: impl Into<Version>, arch: Arch) -> String {
 
     format!("https://nodejs.org/dist/{version}/{installer}")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_version() {
+        let version = super::Version::new(1, 2, 3);
+        assert_eq!(version.major, 1);
+        assert_eq!(version.minor, 2);
+        assert_eq!(version.patch, 3);
+
+        assert_eq!(version.to_string(), "v1.2.3");
+
+        let installer = parse_installer(version, Arch::X64);
+
+        let (os, ext) = crate::consts::OS_STR;
+
+        assert_eq!(installer, format!("node-v1.2.3-{os}-x64.{ext}"));
+    }
+}
