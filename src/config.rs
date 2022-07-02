@@ -2,7 +2,19 @@ use std::fs::{create_dir_all, read_to_string};
 
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::ToError;
+use crate::helpers::{NoneError, ToError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum ConfigError {
+    #[error("{0}")]
+    NoneError(#[from] NoneError),
+    #[error("Failed to interact with IO: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("Failed to serialize toml: {0}")]
+    TomlSerialize(#[from] toml::ser::Error),
+    #[error("Failed to deserilize toml: {0}")]
+    TomlDeserialize(#[from] toml::de::Error),
+}
 
 #[derive(Deserialize, Serialize)]
 pub struct Config {
@@ -18,7 +30,7 @@ pub struct Version {
 }
 
 impl Config {
-    pub fn init() -> anyhow::Result<Self> {
+    pub fn init() -> Result<Self, ConfigError> {
         let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm").to_error()?;
 
         let prefs_path = dirs.preference_dir();
