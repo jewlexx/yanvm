@@ -1,8 +1,9 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-fn parse_version(ver: String) -> u32 {
-    let mut ver = ver.split('.');
+fn parse_version(ver: impl AsRef<str>) -> u32 {
+    let ver_number = ver.as_ref().replace('v', "");
+    let mut ver = ver_number.split('.');
     let major = ver.next().unwrap().parse::<u32>().unwrap();
     let minor = ver.next().unwrap().parse::<u32>().unwrap();
     let patch = ver.next().unwrap().parse::<u32>().unwrap();
@@ -144,4 +145,23 @@ pub enum Zlib {
     The123,
     #[serde(rename = "1.2.8")]
     The128,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_list_index() {
+        let client = Client::new();
+        let index = list_index(&client).await.unwrap();
+        assert!(!index.is_empty());
+    }
+
+    #[test]
+    fn test_parse_version() {
+        assert_eq!(parse_version("v1.2.3"), 0x010203);
+
+        assert_eq!(parse_version("v16.15.1"), 0x100F01);
+    }
 }
