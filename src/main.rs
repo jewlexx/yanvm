@@ -1,5 +1,6 @@
 use versions::index::list_index;
 
+mod config;
 mod consts;
 mod installer;
 mod versions;
