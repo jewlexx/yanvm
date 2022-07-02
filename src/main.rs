@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
 
     let config = Config::init()?;
 
-    if config.versions == vec![] {
+    if config.versions.is_empty() {
         println!("No versions installed. Please run `yanvm install` to install a NodeJS version.");
         return Ok(());
     }
