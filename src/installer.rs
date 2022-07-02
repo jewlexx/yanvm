@@ -2,9 +2,9 @@ use std::{cmp::min, fs::File, io::Write};
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use reqwest::Client;
 
 use crate::{
+    consts::CLIENT,
     helpers::{NoneError, ToError},
     versions::{
         index::{list_index, parse_version, LtsUnion},
@@ -69,10 +69,10 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self, client: &Client) -> Result<(), InstallError> {
+    pub async fn download_binary(&self) -> Result<(), InstallError> {
         let link = self.get_installer_link();
 
-        let res = client.get(link.clone()).send().await?;
+        let res = CLIENT.get(link.clone()).send().await?;
 
         let total_size = res.content_length().unwrap_or(0);
 
