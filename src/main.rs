@@ -1,6 +1,8 @@
+use clap::Parser;
 use config::Config;
 use versions::index::list_index;
 
+mod args;
 mod config;
 mod consts;
 mod installer;
@@ -8,6 +10,8 @@ mod versions;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let args = args::Args::parse();
+
     let config = Config::init()?;
 
     if config.versions == vec![] {
