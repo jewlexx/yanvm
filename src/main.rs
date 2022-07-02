@@ -1,4 +1,5 @@
-use reqwest::Client;
+use installer::Installer;
+use versions::index::LtsUnion;
 
 mod consts;
 mod installer;
@@ -6,16 +7,16 @@ mod versions;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let client = Client::new();
+    let lts_version = Installer::lts_version().await?;
 
-    let index = versions::index::list_index(&client).await?;
+    println!("{}", lts_version.get_installer_link());
 
-    dialoguer::Select::new()
-        .with_prompt("Select a version")
-        .default(0)
-        .items(&index)
-        .interact()
-        .unwrap();
+    // dialoguer::Select::new()
+    //     .with_prompt("Select a version")
+    //     .default(0)
+    //     .items(&index)
+    //     .interact()
+    //     .unwrap();
 
     Ok(())
 }

@@ -1,27 +1,31 @@
-use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-fn parse_version(ver: impl AsRef<str>) -> u32 {
+use crate::consts::CLIENT;
+
+pub fn parse_version(ver: impl AsRef<str>) -> (i32, i32, i32) {
     let ver_number = ver.as_ref().replace('v', "");
     let mut ver = ver_number.split('.');
-    let major = ver.next().unwrap().parse::<u32>().unwrap();
-    let minor = ver.next().unwrap().parse::<u32>().unwrap();
-    let patch = ver.next().unwrap().parse::<u32>().unwrap();
+    let major = ver.next().unwrap().parse::<i32>().unwrap();
+    let minor = ver.next().unwrap().parse::<i32>().unwrap();
+    let patch = ver.next().unwrap().parse::<i32>().unwrap();
 
-    (major << 16) | (minor << 8) | patch
+    (major, minor, patch)
 }
 
 fn sort_index(unsorted: &mut NodeIndex) {
     unsorted.sort_by(|ver, old| {
         let ver = parse_version(ver.version.replace('v', ""));
+        let ver_cmp = (ver.0 << 16) | (ver.1 << 8) | ver.2;
+
         let old = parse_version(old.version.replace('v', ""));
+        let old_cmp = (old.0 << 16) | (old.1 << 8) | old.2;
 
         ver.cmp(&old).reverse()
     });
 }
 
-pub async fn list_index(client: &Client) -> reqwest::Result<NodeIndex> {
-    let index: NodeIndex = client
+pub async fn list_index() -> reqwest::Result<NodeIndex> {
+    let index: NodeIndex = CLIENT
         .get("https://nodejs.org/dist/index.json")
         .send()
         .await?
@@ -159,16 +163,15 @@ mod tests {
 
     #[tokio::test]
     async fn test_list_index() {
-        let client = Client::new();
-        let index = list_index(&client).await.unwrap();
+        let index = list_index().await.unwrap();
         assert!(!index.is_empty());
     }
 
     #[test]
     fn test_parse_version() {
-        assert_eq!(parse_version("v1.2.3"), 0x010203);
+        assert_eq!(parse_version("v1.2.3"), (1, 2, 3));
 
-        assert_eq!(parse_version("v16.15.1"), 0x100F01);
+        assert_eq!(parse_version("v16.15.1"), (16, 15, 1));
     }
 
     #[test]

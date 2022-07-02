@@ -1,10 +1,14 @@
 use std::{cmp::min, fs::File, io::Write};
 
+use anyhow::Context;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
-use crate::versions::{Arch, Version};
+use crate::versions::{
+    index::{list_index, parse_version, LtsUnion},
+    Arch, Version,
+};
 
 pub struct Installer {
     version: Version,
@@ -26,6 +30,21 @@ impl Installer {
         let (os, ext) = crate::consts::OS_STR;
 
         format!("node-{}-{os}-{}.{ext}", self.version, self.arch)
+    }
+
+    pub async fn lts_version() -> anyhow::Result<Self> {
+        let index = list_index().await?;
+        let version_string = index
+            .iter()
+            .find(|i| i.lts != LtsUnion::Bool(false))
+            .context("could not find any valid lts version")?
+            .version
+            .to_string();
+
+        let version: Version = parse_version(version_string).into();
+        let installer = Installer::new(version, Arch::new());
+
+        Ok(installer)
     }
 
     pub async fn download_binary(&self, client: &Client) -> anyhow::Result<()> {

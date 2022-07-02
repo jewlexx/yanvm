@@ -9,3 +9,7 @@ pub const OS_STR: (&str, &str) = {
         panic!("Unsupported OS");
     }
 };
+
+lazy_static::lazy_static! {
+    pub static ref CLIENT: reqwest::Client = reqwest::Client::new();
+}
