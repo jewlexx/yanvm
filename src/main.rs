@@ -1,9 +1,11 @@
-use std::{fs::File, io::Write};
+use std::{
+    fs::File,
+    io::{Cursor, Write},
+};
 
 use clap::{IntoApp, Parser};
 use config::Config;
 use installer::Installer;
-use versions::index::list_index;
 
 mod args;
 mod config;
@@ -34,26 +36,11 @@ async fn main() -> anyhow::Result<()> {
 
     let version = Installer::latest_version().await?;
 
-    let bytes = version.download_binary(std::env::current_dir()?).await?;
-    let mut decompressed = Vec::<u8>::new();
-
-    File::create(std::env::current_dir()?.join("node.zip"))?.write_all(&bytes)?;
-
-    if let Err(e) = flate2::Decompress::new(false).decompress_vec(
-        &bytes,
-        &mut decompressed,
-        flate2::FlushDecompress::Finish,
-    ) {
-        eprintln!("{}", e);
-    };
-
-    // let index = list_index().await?;
-
-    // dialoguer::Select::new()
-    //     .with_prompt("Select a version")
-    //     .default(0)
-    //     .items(&index)
-    //     .interact()?;
+    version
+        .download_binary(std::env::current_dir()?)
+        .await?
+        .unzip_file()
+        .await?;
 
     Ok(())
 }

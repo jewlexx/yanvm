@@ -1,7 +1,13 @@
-use std::{cmp::min, fs::File, io::Write, path::PathBuf};
+use std::{
+    cmp::min,
+    fs::File,
+    io::{Cursor, Write},
+    path::PathBuf,
+};
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
+use zip::result::ZipError;
 
 use crate::{
     consts::CLIENT,
@@ -12,6 +18,54 @@ use crate::{
     },
 };
 
+pub struct NodeBinary {
+    bytes: Cursor<Vec<u8>>,
+}
+
+impl NodeBinary {
+    pub fn new(bytes: Vec<u8>) -> Self {
+        let cursor = Cursor::new(bytes);
+
+        Self { bytes: cursor }
+    }
+
+    pub fn bytes(&self) -> &Cursor<Vec<u8>> {
+        &self.bytes
+    }
+
+    pub async fn unzip_file(self) -> Result<(), InstallError> {
+        let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+
+        let total = unzipped.len();
+
+        // Indicatif setup
+        let pb = ProgressBar::new(total as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
+                .progress_chars("#>-"),
+        );
+        pb.set_message("Unzipping");
+
+        let mut downloaded = 0;
+
+        for i in 0..unzipped.len() {
+            let file = unzipped.by_index(i)?;
+
+            let new = min(downloaded + 1, total);
+            downloaded = new;
+
+            pb.set_message(format!("Unzipping {}", file.name()));
+
+            pb.set_position(new as u64);
+        }
+
+        pb.finish_with_message("Unzipped");
+
+        Ok(())
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum InstallError {
     #[error("{0}")]
@@ -20,6 +74,8 @@ pub enum InstallError {
     Reqwest(#[from] reqwest::Error),
     #[error("Failed to interact with IO: {0}")]
     Io(#[from] std::io::Error),
+    #[error("Failed to unzip file: {0}")]
+    UnzipError(#[from] ZipError),
 }
 
 pub struct Installer {
@@ -77,7 +133,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self, base_path: PathBuf) -> Result<Vec<u8>, InstallError> {
+    pub async fn download_binary(&self, base_path: PathBuf) -> Result<NodeBinary, InstallError> {
         let link = self.get_installer_link();
 
         let res = CLIENT.get(link.clone()).send().await?;
@@ -110,7 +166,8 @@ impl Installer {
         }
 
         pb.finish_with_message(format!("Downloaded {} to {}", link, path.display()));
-        Ok(bytes)
+
+        Ok(NodeBinary::new(bytes))
     }
 }
 
