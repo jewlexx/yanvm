@@ -1,6 +1,6 @@
 use std::{
     cmp::min,
-    fs::File,
+    fs::{create_dir_all, File},
     io::{Cursor, Write},
     path::PathBuf,
 };
@@ -50,12 +50,19 @@ impl NodeBinary {
         let mut downloaded = 0;
 
         for i in 0..unzipped.len() {
-            let file = unzipped.by_index(i)?;
+            let mut file = unzipped.by_index(i)?;
+
+            pb.set_message(format!("Unzipping {}", file.name()));
+
+            if file.is_dir() {
+                create_dir_all(file.name())?;
+            } else if file.is_file() {
+                let mut file_ref = File::create(file.name())?;
+                std::io::copy(&mut file, &mut file_ref)?;
+            }
 
             let new = min(downloaded + 1, total);
             downloaded = new;
-
-            pb.set_message(format!("Unzipping {}", file.name()));
 
             pb.set_position(new as u64);
         }
