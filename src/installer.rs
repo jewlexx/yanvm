@@ -1,7 +1,7 @@
 use std::{
     cmp::min,
     fs::{create_dir_all, File},
-    io::{Cursor, Write},
+    io::Cursor,
     path::PathBuf,
 };
 
@@ -27,10 +27,6 @@ impl NodeBinary {
         let cursor = Cursor::new(bytes);
 
         Self { bytes: cursor }
-    }
-
-    pub fn bytes(&self) -> &Cursor<Vec<u8>> {
-        &self.bytes
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {

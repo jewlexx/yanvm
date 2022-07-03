@@ -20,7 +20,7 @@ fn sort_index(unsorted: &mut NodeIndex) {
         let old = parse_version(old.version.replace('v', ""));
         let old_cmp = (old.0 << 16) | (old.1 << 8) | old.2;
 
-        ver.cmp(&old).reverse()
+        ver_cmp.cmp(&old_cmp).reverse()
     });
 }
 

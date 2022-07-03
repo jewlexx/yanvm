@@ -1,8 +1,3 @@
-use std::{
-    fs::File,
-    io::{Cursor, Write},
-};
-
 use clap::{IntoApp, Parser};
 use config::Config;
 use installer::Installer;
