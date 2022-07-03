@@ -1,5 +1,6 @@
 use std::{
     cmp::min,
+    fmt::Display,
     fs::{create_dir_all, File},
     io::Cursor,
     path::PathBuf,
@@ -17,6 +18,28 @@ use crate::{
         Arch, Version,
     },
 };
+
+pub enum ArchiveType {
+    TarGz,
+    TarXz,
+    Zip,
+}
+
+impl Display for ArchiveType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.get_ext())
+    }
+}
+
+impl ArchiveType {
+    pub fn get_ext(&self) -> &'static str {
+        match self {
+            ArchiveType::TarGz => "tar.gz",
+            ArchiveType::TarXz => "tar.xz",
+            ArchiveType::Zip => "zip",
+        }
+    }
+}
 
 pub struct NodeBinary {
     bytes: Cursor<Vec<u8>>,

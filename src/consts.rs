@@ -1,10 +1,12 @@
-pub const OS_STR: (&str, &str) = {
+use crate::installer::ArchiveType;
+
+pub const OS_STR: (&str, ArchiveType) = {
     if cfg!(windows) {
-        ("win", "zip")
+        ("win", ArchiveType::Zip)
     } else if cfg!(target_os = "macos") {
-        ("darwin", "tar.gz")
+        ("darwin", ArchiveType::TarGz)
     } else if cfg!(target_os = "linux") {
-        ("linux", "tar.xz")
+        ("linux", ArchiveType::TarXz)
     } else {
         panic!("Unsupported OS");
     }
