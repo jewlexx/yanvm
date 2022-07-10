@@ -19,7 +19,7 @@ pub enum ConfigError {
 #[derive(Deserialize, Serialize)]
 pub struct Config {
     pub versions: Vec<Version>,
-    pub current: Option<String>,
+    pub current: Option<Version>,
 }
 
 #[derive(Deserialize, Serialize, PartialEq, Eq)]
