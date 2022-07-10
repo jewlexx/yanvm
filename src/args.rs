@@ -9,5 +9,12 @@ pub struct Args {
 
 #[derive(Debug, Subcommand, PartialEq, Eq)]
 pub enum Commands {
-    Install { version_str: Option<String> },
+    Install {
+        #[clap(
+            name = "VERSION",
+            help = "The version to install. [lts or latest act as variables for their respective versions]",
+            default_value = "lts"
+        )]
+        version_str: String,
+    },
 }

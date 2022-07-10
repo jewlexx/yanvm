@@ -33,11 +33,6 @@ async fn main() -> anyhow::Result<()> {
         }
         Some(command) => match command {
             args::Commands::Install { version_str } => {
-                let version_str = match version_str {
-                    Some(v) => v,
-                    None => anyhow::bail!("Please specify a version"),
-                };
-
                 let version = match version_str.as_str() {
                     "latest" => Installer::latest_version().await?,
                     "lts" => Installer::lts_version().await?,
