@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 pub mod index;
 
 pub enum Arch {
@@ -36,7 +38,7 @@ impl std::fmt::Display for Arch {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct Version {
     pub major: i32,
     pub minor: i32,

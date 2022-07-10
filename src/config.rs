@@ -2,7 +2,10 @@ use std::fs::{create_dir_all, read_to_string};
 
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{NoneError, ToError};
+use crate::{
+    helpers::{NoneError, ToError},
+    versions::Version,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
@@ -20,13 +23,6 @@ pub enum ConfigError {
 pub struct Config {
     pub versions: Vec<Version>,
     pub current: Option<Version>,
-}
-
-#[derive(Deserialize, Serialize, PartialEq, Eq)]
-pub struct Version {
-    pub major: u32,
-    pub minor: u32,
-    pub patch: u32,
 }
 
 impl Config {
