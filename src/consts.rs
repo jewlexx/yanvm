@@ -1,4 +1,6 @@
-use crate::installer::ArchiveType;
+use parking_lot::{const_mutex, Mutex};
+
+use crate::{config::Config, installer::ArchiveType};
 
 pub const OS_STR: (&str, ArchiveType) = {
     if cfg!(windows) {
@@ -15,3 +17,5 @@ pub const OS_STR: (&str, ArchiveType) = {
 lazy_static::lazy_static! {
     pub static ref CLIENT: reqwest::Client = reqwest::Client::new();
 }
+
+pub static CONFIG: Mutex<Config> = const_mutex(Config::blank());

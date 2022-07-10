@@ -13,10 +13,15 @@ mod versions;
 async fn main() -> anyhow::Result<()> {
     let args = args::Args::parse();
 
-    let config = Config::init()?;
+    // Initialize Global Config
+    {
+        let config = Config::init()?;
+        *consts::CONFIG.lock() = config;
+    }
 
     match args.command {
         None => {
+            let config = consts::CONFIG.lock();
             if config.versions.is_empty() {
                 println!(
                 "No versions installed. Please run `yanvm install` to install a NodeJS version."

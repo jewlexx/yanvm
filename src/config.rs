@@ -29,6 +29,13 @@ pub struct Config {
 }
 
 impl Config {
+    pub const fn blank() -> Self {
+        Config {
+            versions: Vec::new(),
+            current: None,
+        }
+    }
+
     pub fn init() -> Result<Self, ConfigError> {
         let prefs_path = Self::prefs_path()?;
         let config_path = Self::config_path()?;

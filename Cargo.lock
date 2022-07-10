@@ -1690,6 +1690,7 @@ dependencies = [
  "futures-util",
  "indicatif",
  "lazy_static",
+ "parking_lot",
  "reqwest",
  "serde",
  "serde_json",
