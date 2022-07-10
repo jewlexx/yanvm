@@ -102,6 +102,8 @@ pub enum InstallError {
     Io(#[from] std::io::Error),
     #[error("Failed to unzip file: {0}")]
     UnzipError(#[from] ZipError),
+    #[error("Interaction with config")]
+    ConfigError(#[from] crate::config::ConfigError),
 }
 
 pub struct Installer {
@@ -192,6 +194,11 @@ impl Installer {
         }
 
         pb.finish_with_message(format!("Downloaded {} to {}", link, path.display()));
+
+        let mut config = crate::consts::CONFIG.lock();
+
+        config.versions.push(self.version);
+        config.save()?;
 
         Ok(NodeBinary::new(bytes))
     }
