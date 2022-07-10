@@ -1,4 +1,7 @@
-use std::fs::{create_dir_all, read_to_string};
+use std::{
+    fs::{create_dir_all, read_to_string},
+    path::PathBuf,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -27,11 +30,8 @@ pub struct Config {
 
 impl Config {
     pub fn init() -> Result<Self, ConfigError> {
-        let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm").to_error()?;
-
-        let prefs_path = dirs.preference_dir();
-
-        let config_path = prefs_path.join("config.toml");
+        let prefs_path = Self::prefs_path()?;
+        let config_path = Self::config_path()?;
 
         if !prefs_path.exists() {
             create_dir_all(prefs_path)?;
@@ -51,5 +51,27 @@ impl Config {
 
             Ok(config)
         }
+    }
+
+    pub fn save(&self) -> Result<(), ConfigError> {
+        let config_path = Self::config_path()?;
+
+        let serialized = toml::to_string_pretty(self)?;
+
+        std::fs::write(&config_path, serialized)?;
+
+        Ok(())
+    }
+
+    fn prefs_path() -> Result<PathBuf, ConfigError> {
+        let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm").to_error()?;
+
+        Ok(dirs.preference_dir().to_path_buf())
+    }
+
+    fn config_path() -> Result<PathBuf, ConfigError> {
+        let prefs_path = Self::prefs_path()?;
+
+        Ok(prefs_path.join("Config.toml"))
     }
 }
