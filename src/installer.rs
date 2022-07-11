@@ -2,7 +2,7 @@ use std::{
     cmp::min,
     fmt::Display,
     fs::{create_dir_all, File},
-    io::Cursor,
+    io::{Cursor, Read},
     path::PathBuf,
 };
 
@@ -38,6 +38,28 @@ impl ArchiveType {
             ArchiveType::TarGz => "tar.gz",
             ArchiveType::TarXz => "tar.xz",
             ArchiveType::Zip => "zip",
+        }
+    }
+}
+
+pub struct Decompressor {
+    bytes: Cursor<Vec<u8>>,
+}
+
+impl Decompressor {
+    pub const fn new(bytes: Cursor<Vec<u8>>) -> Self {
+        Self { bytes }
+    }
+
+    pub fn decompress_into_mem(&self) -> Vec<u8> {
+        cfg_if::cfg_if! {
+            if #[cfg(windows)] {
+                let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+            } else if #[cfg(target_os = "macos")] {
+                todo!();
+            } else {
+                let unzipped = xz2::read::XzDecoder::new(self.bytes);
+            }
         }
     }
 }
