@@ -60,7 +60,7 @@ impl NodeBinary {
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
-                let unzipped = xz::read::XzDecoder::new(self.bytes);
+                let unzipped = xz2::read::XzDecoder::new(self.bytes);
             }
         }
 
