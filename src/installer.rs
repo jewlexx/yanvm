@@ -51,14 +51,14 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub fn decompress_into_mem(&self) -> Vec<u8> {
+    pub async fn decompress_into_mem(self) {
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
-                let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+                let mut unzipped = async_compression::tokio::bufread::DeflateDecoder::new(self.bytes);
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
-                let unzipped = xz2::read::XzDecoder::new(self.bytes);
+                let mut unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes);
             }
         }
     }
