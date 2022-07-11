@@ -13,6 +13,7 @@ use zip::result::ZipError;
 use crate::{
     consts::CLIENT,
     helpers::{NoneError, ToError},
+    init_dirs,
     versions::{
         index::{list_index, parse_version, LtsUnion},
         Arch, Version,
@@ -68,15 +69,22 @@ impl NodeBinary {
 
         let mut downloaded = 0;
 
+        let dirs = init_dirs!().to_error()?;
+
         for i in 0..unzipped.len() {
             let mut file = unzipped.by_index(i)?;
 
-            pb.set_message(format!("Unzipping {}", file.name()));
+            let name = match file.enclosed_name() {
+                Some(v) => v,
+                None => panic!("Invalid path"),
+            };
+
+            pb.set_message(format!("Unzipping {}", name.display()));
 
             if file.is_dir() {
-                create_dir_all(file.name())?;
+                create_dir_all(name)?;
             } else if file.is_file() {
-                let mut file_ref = File::create(file.name())?;
+                let mut file_ref = File::create(name)?;
                 std::io::copy(&mut file, &mut file_ref)?;
             }
 
