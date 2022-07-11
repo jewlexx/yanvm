@@ -51,19 +51,19 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_mem(self) -> Vec<u8> {
+    pub async fn decompress_into_dir(self, path: PathBuf) {
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
-                let mut unzipped = async_compression::tokio::bufread::DeflateDecoder::new(self.bytes);
+                let mut archive = async_compression::tokio::bufread::DeflateDecoder::new(self.bytes);
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
                 let unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes).into_inner();
-                let archive = tar::Archive::new(unzipped);
+                let mut archive = tar::Archive::new(unzipped);
+
+                archive.unpack(path);
             }
         }
-
-        Vec::new()
     }
 }
 
