@@ -52,7 +52,7 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_mem(self) {
+    pub async fn decompress_into_mem(self) -> Vec<u8> {
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
                 let mut unzipped = async_compression::tokio::bufread::DeflateDecoder::new(self.bytes);
@@ -72,6 +72,8 @@ impl Decompressor {
                 Err(_) => 0,
             }
         }
+
+        decompressed
     }
 }
 
