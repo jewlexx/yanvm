@@ -8,6 +8,7 @@ use std::{
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
+use tokio::io::AsyncReadExt;
 use zip::result::ZipError;
 
 use crate::{
@@ -61,6 +62,10 @@ impl Decompressor {
                 let mut unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes);
             }
         }
+
+        let mut decompressed: &mut [u8] = &mut [];
+
+        let inner = unzipped.read(decompressed);
     }
 }
 
