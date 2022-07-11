@@ -64,8 +64,14 @@ impl Decompressor {
         }
 
         let mut decompressed: Vec<u8> = Vec::new();
+        let mut position: usize = 0;
 
-        let inner = unzipped.read(&mut decompressed);
+        while position != 0 {
+            position = match unzipped.read(&mut decompressed).await {
+                Ok(v) => v,
+                Err(_) => 0,
+            }
+        }
     }
 }
 
