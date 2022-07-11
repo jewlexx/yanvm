@@ -54,7 +54,15 @@ impl NodeBinary {
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {
-        let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+        cfg_if::cfg_if! {
+            if #[cfg(windows)] {
+                let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+            } else if #[cfg(target_os = "macos")] {
+                todo!();
+            } else {
+                let unzipped = xz::read::XzDecoder::new(self.bytes);
+            }
+        }
 
         let total = unzipped.len();
 
