@@ -58,7 +58,7 @@ impl Decompressor {
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
-                let unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes).into_inner();
+                let unzipped = xz2::read::XzDecoder::new(self.bytes);
                 let mut archive = tar::Archive::new(unzipped);
 
                 archive.unpack(path);
