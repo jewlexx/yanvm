@@ -9,7 +9,6 @@ use std::{
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::io::AsyncReadExt;
-use zip::result::ZipError;
 
 use crate::{
     consts::CLIENT,
@@ -59,21 +58,12 @@ impl Decompressor {
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
-                let mut unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes);
+                let unzipped = async_compression::tokio::bufread::XzDecoder::new(self.bytes).into_inner();
+                let archive = tar::Archive::new(unzipped);
             }
         }
 
-        let mut decompressed: Vec<u8> = Vec::new();
-        let mut position: usize = 0;
-
-        while position != 0 {
-            position = match unzipped.read(&mut decompressed).await {
-                Ok(v) => v,
-                Err(_) => 0,
-            }
-        }
-
-        decompressed
+        Vec::new()
     }
 }
 
