@@ -54,7 +54,40 @@ impl Decompressor {
     pub async fn decompress_into_dir(self, path: PathBuf) {
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
-                let mut archive = async_compression::tokio::bufread::DeflateDecoder::new(self.bytes);
+                let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
+
+                let total = unzipped.len();
+
+                // Indicatif setup
+                let pb = ProgressBar::new(total as u64);
+                pb.set_style(
+                    ProgressStyle::default_bar()
+                        .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
+                        .progress_chars("#>-"),
+                );
+                pb.set_message("Unzipping");
+
+                let mut downloaded = 0;
+
+                for i in 0..unzipped.len() {
+                    let mut file = unzipped.by_index(i)?;
+
+                    pb.set_message(format!("Unzipping {}", file.name()));
+
+                    if file.is_dir() {
+                        create_dir_all(file.name())?;
+                    } else if file.is_file() {
+                        let mut file_ref = File::create(file.name())?;
+                        std::io::copy(&mut file, &mut file_ref)?;
+                    }
+
+                    let new = min(downloaded + 1, total);
+                    downloaded = new;
+
+                    pb.set_position(new as u64);
+                }
+
+                pb.finish_with_message("Unzipped");
             } else if #[cfg(target_os = "macos")] {
                 todo!();
             } else {
