@@ -9,6 +9,9 @@ mod helpers;
 mod installer;
 mod versions;
 
+#[macro_use]
+mod macros;
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = args::Args::parse();

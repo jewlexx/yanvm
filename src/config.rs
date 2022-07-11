@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     helpers::{NoneError, ToError},
+    init_dirs,
     versions::Version,
 };
 
@@ -71,7 +72,7 @@ impl Config {
     }
 
     fn prefs_path() -> Result<PathBuf, ConfigError> {
-        let dirs = directories::ProjectDirs::from("com", "jewelexx", "yanvm").to_error()?;
+        let dirs = init_dirs!().to_error()?;
 
         Ok(dirs.preference_dir().to_path_buf())
     }
