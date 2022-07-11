@@ -63,9 +63,9 @@ impl Decompressor {
             }
         }
 
-        let mut decompressed: &mut [u8] = &mut [];
+        let mut decompressed: Vec<u8> = Vec::new();
 
-        let inner = unzipped.read(decompressed);
+        let inner = unzipped.read(&mut decompressed);
     }
 }
 
