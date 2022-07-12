@@ -4,8 +4,12 @@ name: CI
 
 jobs:
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout sources
