@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod index;
 
+#[derive(Copy, Clone)]
 pub enum Arch {
     X86,
     X64,

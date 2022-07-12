@@ -327,13 +327,19 @@ mod tests {
 
     #[test]
     fn test_installer() {
-        let installer = Installer::new(VERSION, Arch::new());
+        let arch = Arch::new();
+        let installer = Installer::new(VERSION, arch);
 
         let (os, ext) = crate::consts::OS_STR;
 
         assert_eq!(
-            installer.get_installer_link(),
-            format!("node-v1.2.3-{os}-x64.{ext}", os = os, ext = ext)
+            installer.parse_installer(),
+            format!(
+                "node-v1.2.3-{os}-{arch}.{ext}",
+                os = os,
+                ext = ext,
+                arch = arch
+            )
         );
     }
 }
