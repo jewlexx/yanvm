@@ -110,19 +110,6 @@ impl Decompressor {
             if #[cfg(windows)] {
                 let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
 
-                let total = unzipped.len();
-
-                // // Indicatif setup
-                // let pb = ProgressBar::new(total as u64);
-                // pb.set_style(
-                //     ProgressStyle::default_bar()
-                //         .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
-                //         .progress_chars("#>-"),
-                // );
-                // pb.set_message("Unzipping");
-
-                let mut downloaded = 0;
-
                 for i in 0..unzipped.len() {
                     let mut file = unzipped.by_index(i)?;
 
@@ -132,7 +119,7 @@ impl Decompressor {
                     } else if file.is_file() {
                         let mut unpacked: Vec<u8> = Vec::new();
 
-                        file.read_to_end(&mut unpacked);
+                        file.read_to_end(&mut unpacked)?;
 
                         final_archive.files.push((path, unpacked));
                     }
