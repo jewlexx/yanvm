@@ -100,24 +100,23 @@ impl Decompressor {
                 let entries = archive.entries()?;
 
                 for entry in entries {
-                    let entry = entry.unwrap();
+                    let mut entry = entry.unwrap();
 
-                    let path = entry.path()?;
-
-                    match entry.header().entry_type() {
-                        tar::EntryType::Directory => create_dir_all(path)?,
+                    match (*entry.header()).entry_type() {
+                        tar::EntryType::Directory => create_dir_all(entry.path()?)?,
                         tar::EntryType::Regular => {
                             let mut unpacked: Vec<u8> = Vec::new();
 
                             entry.read_to_end(&mut unpacked);
 
-                            std::fs::write(path, unpacked)?
+                            std::fs::write(entry.path()?, unpacked)?
                         },
                         _ => todo!(),
                     }
                 }
             }
         }
+        Ok(())
     }
 }
 
