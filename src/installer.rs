@@ -42,8 +42,8 @@ impl ArchiveType {
 }
 
 pub struct Archive {
-    pub dirs: Vec<String>,
-    pub files: Vec<(String, Vec<u8>)>,
+    pub dirs: Vec<PathBuf>,
+    pub files: Vec<(PathBuf, Vec<u8>)>,
 }
 
 pub struct Decompressor {
@@ -96,6 +96,10 @@ impl Decompressor {
                 }
 
                 let mut archive = tar::Archive::new(unzipped);
+                let mut final_archive = Archive {
+                    dirs: Vec::new(),
+                    files: Vec::new(),
+                };
 
                 let entries = archive.entries()?;
 
@@ -105,13 +109,13 @@ impl Decompressor {
                     let path = path.join(entry.path()?);
 
                     match (*entry.header()).entry_type() {
-                        tar::EntryType::Directory => create_dir_all(path)?,
+                        tar::EntryType::Directory => final_archive.dirs.push(path),
                         tar::EntryType::Regular => {
                             let mut unpacked: Vec<u8> = Vec::new();
 
                             entry.read_to_end(&mut unpacked);
 
-                            std::fs::write(path, unpacked)?
+                            final_archive.files.push((path, unpacked));
                         },
                         // TODO: Figure out exactly what types of files will exist in the archive and handle all possibilities.
                         _ => todo!(),
