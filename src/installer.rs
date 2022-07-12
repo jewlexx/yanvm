@@ -219,8 +219,9 @@ pub enum InstallError {
     Reqwest(#[from] reqwest::Error),
     #[error("Failed to interact with IO: {0}")]
     Io(#[from] std::io::Error),
-    #[error("Failed to unzip file: {0}")]
-    UnzipError(#[from] ZipError),
+    #[cfg(windows)]
+    #[error("Failed to decompress file: {0}")]
+    DecompressError(#[from] zip::ZipError),
     #[error("Interaction with config")]
     ConfigError(#[from] crate::config::ConfigError),
 }
