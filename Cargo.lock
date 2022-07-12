@@ -922,6 +922,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "quork"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fafde6ba3337185cb17dba3135fdb494289b5bbbeb2d7573d3a69e11274cad35"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1646,6 +1655,7 @@ dependencies = [
  "indicatif",
  "lazy_static",
  "parking_lot",
+ "quork",
  "reqwest",
  "serde",
  "serde_json",
