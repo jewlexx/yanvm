@@ -1,7 +1,7 @@
 use std::{
     cmp::min,
     fmt::Display,
-    fs::{create_dir_all, File},
+    fs::create_dir_all,
     io::{Cursor, Read},
     path::PathBuf,
 };
@@ -12,7 +12,6 @@ use indicatif::{ProgressBar, ProgressStyle};
 use crate::{
     consts::CLIENT,
     helpers::{NoneError, ToError},
-    init_dirs,
     versions::{
         index::{list_index, parse_version, LtsUnion},
         Arch, Version,
@@ -161,7 +160,7 @@ impl Decompressor {
                         tar::EntryType::Regular => {
                             let mut unpacked: Vec<u8> = Vec::new();
 
-                            entry.read_to_end(&mut unpacked);
+                            entry.read_to_end(&mut unpacked)?;
 
                             final_archive.files.push((path, unpacked));
                         },
