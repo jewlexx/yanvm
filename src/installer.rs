@@ -55,7 +55,7 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_dir(self, path: PathBuf) -> io::Result<()> {
+    pub async fn decompress_into_dir(self, path: PathBuf) -> std::io::Result<()> {
         // TODO: fix issues with cross platform decompression
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
