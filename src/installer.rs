@@ -84,6 +84,8 @@ impl Archive {
             pb.set_position(new as u64);
         }
 
+        pb.finish_with_message("Unzipped");
+
         Ok(())
     }
 }
@@ -135,8 +137,6 @@ impl Decompressor {
                         final_archive.files.push((path, unpacked));
                     }
                 }
-
-                pb.finish_with_message("Unzipped");
             } else {
                 cfg_if::cfg_if! {
                     if #[cfg(target_os = "macos")] {
