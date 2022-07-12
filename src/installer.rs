@@ -55,7 +55,7 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_dir(self, path: PathBuf) -> std::io::Result<()> {
+    pub async fn decompress_into_mem(self, path: PathBuf) -> std::io::Result<Archive> {
         let mut final_archive = Archive {
             dirs: Vec::new(),
             files: Vec::new(),
@@ -128,7 +128,7 @@ impl Decompressor {
                 }
             }
         }
-        Ok(())
+        Ok(final_archive)
     }
 }
 
