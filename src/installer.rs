@@ -8,7 +8,6 @@ use std::{
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use lzma::reader::LzmaReader;
 
 use crate::{
     consts::CLIENT,
