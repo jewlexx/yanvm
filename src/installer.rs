@@ -95,6 +95,12 @@ impl Decompressor {
                     }
                 }
 
+                macro_rules! get_path {
+                    ( $base:expr, $entry:expr ) => {
+                        $base.join($entry.path()?)
+                    }
+                }
+
                 let mut archive = tar::Archive::new(unzipped);
 
                 let entries = archive.entries()?;
@@ -102,14 +108,16 @@ impl Decompressor {
                 for entry in entries {
                     let mut entry = entry.unwrap();
 
+                    let path = get_path!(path, entry);
+
                     match (*entry.header()).entry_type() {
-                        tar::EntryType::Directory => create_dir_all(entry.path()?)?,
+                        tar::EntryType::Directory => create_dir_all(path)?,
                         tar::EntryType::Regular => {
                             let mut unpacked: Vec<u8> = Vec::new();
 
                             entry.read_to_end(&mut unpacked);
 
-                            std::fs::write(entry.path()?, unpacked)?
+                            std::fs::write(path, unpacked)?
                         },
                         _ => todo!(),
                     }
