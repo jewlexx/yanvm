@@ -46,6 +46,20 @@ pub struct Archive {
     pub files: Vec<(PathBuf, Vec<u8>)>,
 }
 
+impl Archive {
+    pub fn decompress(self) -> std::io::Result<()> {
+        for dir in self.dirs {
+            create_dir_all(dir)?;
+        }
+
+        for file in self.files {
+            std::fs::write(file.0, file.1)?;
+        }
+
+        Ok(())
+    }
+}
+
 pub struct Decompressor {
     bytes: Cursor<Vec<u8>>,
 }
@@ -55,7 +69,7 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_mem(self, path: PathBuf) -> std::io::Result<Archive> {
+    pub fn decompress_into_mem(self, path: PathBuf) -> std::io::Result<Archive> {
         let mut final_archive = Archive {
             dirs: Vec::new(),
             files: Vec::new(),
