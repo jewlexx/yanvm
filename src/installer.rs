@@ -52,12 +52,37 @@ impl Archive {
     }
 
     pub fn decompress(self) -> std::io::Result<()> {
+        let total = self.total_len();
+
+        // Indicatif setup
+        let pb = ProgressBar::new(total as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
+                .progress_chars("#>-"),
+        );
+        pb.set_message("Unzipping");
+
+        let mut extracted = 0;
+
         for dir in self.dirs {
+            pb.set_message(format!("Creating {}", dir.display()));
+
+            let new = min(extracted + 1, total);
+            extracted = new;
+
             create_dir_all(dir)?;
+            pb.set_position(new as u64);
         }
 
         for file in self.files {
+            pb.set_message(format!("Unzipping {}", file.0.display()));
+
+            let new = min(extracted + 1, total);
+            extracted = new;
+
             std::fs::write(file.0, file.1)?;
+            pb.set_position(new as u64);
         }
 
         Ok(())
@@ -167,45 +192,7 @@ impl NodeBinary {
 
         let archive = Decompressor::new(self.bytes).decompress_into_mem(path)?;
 
-        let total = archive.total_len();
-
-        // Indicatif setup
-        let pb = ProgressBar::new(total as u64);
-        pb.set_style(
-            ProgressStyle::default_bar()
-                .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
-                .progress_chars("#>-"),
-        );
-        pb.set_message("Unzipping");
-
-        let mut downloaded = 0;
-
-        let dirs = init_dirs!().to_error()?;
-
-        for i in 0..unzipped.len() {
-            let mut file = unzipped.by_index(i)?;
-
-            let name = match file.enclosed_name() {
-                Some(v) => v,
-                None => panic!("Invalid path"),
-            };
-
-            pb.set_message(format!("Unzipping {}", name.display()));
-
-            if file.is_dir() {
-                create_dir_all(name)?;
-            } else if file.is_file() {
-                let mut file_ref = File::create(name)?;
-                std::io::copy(&mut file, &mut file_ref)?;
-            }
-
-            let new = min(downloaded + 1, total);
-            downloaded = new;
-
-            pb.set_position(new as u64);
-        }
-
-        pb.finish_with_message("Unzipped");
+        archive.decompress()?;
 
         Ok(())
     }
