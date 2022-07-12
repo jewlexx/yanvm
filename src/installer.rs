@@ -47,6 +47,10 @@ pub struct Archive {
 }
 
 impl Archive {
+    pub fn total_len(&self) -> usize {
+        self.files.len() + self.dirs.len()
+    }
+
     pub fn decompress(self) -> std::io::Result<()> {
         for dir in self.dirs {
             create_dir_all(dir)?;
@@ -160,8 +164,10 @@ impl NodeBinary {
     pub async fn unzip_file(self) -> Result<(), InstallError> {
         // NOTE: This is temporary until I figure out actual dirs
         let path = std::env::current_dir().unwrap();
-        let decompressor = Decompressor::new(self.bytes).decompress_into_mem(path)?;
-        let total = unzipped.len();
+
+        let archive = Decompressor::new(self.bytes).decompress_into_mem(path)?;
+
+        let total = archive.total_len();
 
         // Indicatif setup
         let pb = ProgressBar::new(total as u64);
