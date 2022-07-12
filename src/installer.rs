@@ -2,7 +2,7 @@ use std::{
     cmp::min,
     fmt::Display,
     fs::{create_dir_all, File},
-    io::Cursor,
+    io::{Cursor, Read},
     path::PathBuf,
 };
 
@@ -55,7 +55,7 @@ impl Decompressor {
         Self { bytes }
     }
 
-    pub async fn decompress_into_dir(self, path: PathBuf) {
+    pub async fn decompress_into_dir(self, path: PathBuf) -> io::Result<()> {
         // TODO: fix issues with cross platform decompression
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
@@ -97,7 +97,25 @@ impl Decompressor {
 
                 let mut archive = tar::Archive::new(unzipped);
 
-                archive.unpack(path);
+                let entries = archive.entries()?;
+
+                for entry in entries {
+                    let entry = entry.unwrap();
+
+                    let path = entry.path()?;
+
+                    match entry.header().entry_type() {
+                        tar::EntryType::Directory => create_dir_all(path)?,
+                        tar::EntryType::Regular => {
+                            let mut unpacked: Vec<u8> = Vec::new();
+
+                            entry.read_to_end(&mut unpacked);
+
+                            std::fs::write(path, unpacked)?
+                        },
+                        _ => todo!(),
+                    }
+                }
             }
         }
     }
