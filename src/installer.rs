@@ -51,6 +51,7 @@ impl Decompressor {
     }
 
     pub async fn decompress_into_dir(self, path: PathBuf) {
+        // TODO: fix issues with cross platform decompression
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
                 let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
@@ -92,6 +93,7 @@ impl Decompressor {
             } else {
                 let unzipped = xz2::read::XzDecoder::new(self.bytes);
                 let mut archive = tar::Archive::new(unzipped);
+
 
                 archive.unpack(path);
             }
