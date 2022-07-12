@@ -113,6 +113,7 @@ impl Decompressor {
 
                             std::fs::write(path, unpacked)?
                         },
+                        // TODO: Figure out exactly what types of files will exist in the archive and handle all possibilities.
                         _ => todo!(),
                     }
                 }
