@@ -12,7 +12,6 @@ cfg-if = "1.0.0"
 clap = { version = "3.2.8", features = ["derive"] }
 dialoguer = "0.10.1"
 directories = "4.0.1"
-flate2 = "1.0.24"
 futures-util = "0.3.21"
 indicatif = "0.16.2"
 lazy_static = "1.4.0"
@@ -28,9 +27,12 @@ toml = "0.5.9"
 [target.'cfg(windows)'.dependencies]
 zip = "0.6.2"
 
-[target.'cfg(target_os = "linux")'.dependencies]
-xz2 = "0.1.7"
-
-[build-dependencies]
+[target.'cfg(windows)'.build-dependencies]
 cc = "1.0.73"
 cfg-if = "1.0.0"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+flate2 = "1.0.24"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+xz2 = "0.1.7"
