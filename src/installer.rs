@@ -86,12 +86,16 @@ impl Decompressor {
                 }
 
                 pb.finish_with_message("Unzipped");
-            } else if #[cfg(target_os = "macos")] {
-                todo!();
             } else {
-                let unzipped = xz2::read::XzDecoder::new(self.bytes);
-                let mut archive = tar::Archive::new(unzipped);
+                cfg_if::cfg_if! {
+                    if #[cfg(target_os = "macos")] {
+                        let unzipped = flate2::read::GzDecoder::new(self.bytes);
+                    } else {
+                        let unzipped = xz2::read::XzDecoder::new(self.bytes);
+                    }
+                }
 
+                let mut archive = tar::Archive::new(unzipped);
 
                 archive.unpack(path);
             }
