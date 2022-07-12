@@ -1,1 +1,1 @@
-NOTE: For now on Windows, you **MUST** have developer mode enabled
+NOTE: For now on Windows, you **MUST** have developer mode enabled. Windows does not allow symlinks without either developer mode or admin privileges, and running a program like this with admin privileges is insecure to say the least
