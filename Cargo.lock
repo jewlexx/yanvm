@@ -1019,15 +1019,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-lzma"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "895dc04daeaeee338bb96e229797902ed3f0675bfc59d5b42e0f0b0c13ac54da"
-dependencies = [
- "pkg-config",
-]
-
-[[package]]
 name = "ryu"
 version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1655,7 +1646,6 @@ dependencies = [
  "lazy_static",
  "parking_lot",
  "reqwest",
- "rust-lzma",
  "serde",
  "serde_json",
  "tar",
