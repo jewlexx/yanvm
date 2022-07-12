@@ -2,13 +2,12 @@ use std::{
     cmp::min,
     fmt::Display,
     fs::{create_dir_all, File},
-    io::{Cursor, Read},
+    io::Cursor,
     path::PathBuf,
 };
 
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use tokio::io::AsyncReadExt;
 
 use crate::{
     consts::CLIENT,
