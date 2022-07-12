@@ -207,7 +207,7 @@ pub enum InstallError {
     Io(#[from] std::io::Error),
     #[cfg(windows)]
     #[error("Failed to decompress file: {0}")]
-    DecompressError(#[from] zip::ZipError),
+    DecompressError(#[from] zip::result::ZipError),
     #[error("Interaction with config")]
     ConfigError(#[from] crate::config::ConfigError),
 }
