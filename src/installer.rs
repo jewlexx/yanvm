@@ -41,6 +41,11 @@ impl ArchiveType {
     }
 }
 
+pub struct Archive {
+    pub dirs: Vec<String>,
+    pub files: Vec<(String, Vec<u8>)>,
+}
+
 pub struct Decompressor {
     bytes: Cursor<Vec<u8>>,
 }
