@@ -158,6 +158,9 @@ impl NodeBinary {
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {
+        // NOTE: This is temporary until I figure out actual dirs
+        let path = std::env::current_dir().unwrap();
+        let decompressor = Decompressor::new(self.bytes).decompress_into_mem(path)?;
         let total = unzipped.len();
 
         // Indicatif setup
