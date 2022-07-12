@@ -56,6 +56,11 @@ impl Decompressor {
     }
 
     pub async fn decompress_into_dir(self, path: PathBuf) -> std::io::Result<()> {
+        let mut final_archive = Archive {
+            dirs: Vec::new(),
+            files: Vec::new(),
+        };
+
         // TODO: fix issues with cross platform decompression
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
@@ -77,11 +82,15 @@ impl Decompressor {
                 for i in 0..unzipped.len() {
                     let mut file = unzipped.by_index(i)?;
 
+                    let path = path.join(file.name());
                     if file.is_dir() {
-                        create_dir_all(file.name())?;
+                        final_archive.dirs.push(path);
                     } else if file.is_file() {
-                        let mut file_ref = File::create(file.name())?;
-                        std::io::copy(&mut file, &mut file_ref)?;
+                        let mut unpacked: Vec<u8> = Vec::new();
+
+                        file.read_to_end(&mut unpacked);
+
+                        final_archive.files.push((path, unpacked));
                     }
                 }
 
@@ -96,10 +105,6 @@ impl Decompressor {
                 }
 
                 let mut archive = tar::Archive::new(unzipped);
-                let mut final_archive = Archive {
-                    dirs: Vec::new(),
-                    files: Vec::new(),
-                };
 
                 let entries = archive.entries()?;
 
