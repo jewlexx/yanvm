@@ -37,3 +37,5 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+
+      - uses: Swatinem/rust-cache@v1
