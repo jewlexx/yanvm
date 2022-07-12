@@ -14,7 +14,7 @@ mod macros;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    if quork::is_admin() {
+    if quork::admin::is_admin() {
         panic!("Should not be run as admin!");
     }
 
