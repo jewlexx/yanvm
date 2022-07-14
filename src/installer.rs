@@ -100,6 +100,7 @@ impl Decompressor {
         };
 
         // TODO: fix issues with cross platform decompression
+        // TODO: Remove duplicated code across platforms
         cfg_if::cfg_if! {
             if #[cfg(windows)] {
                 let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
