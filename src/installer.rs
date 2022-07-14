@@ -78,8 +78,6 @@ impl Archive {
             pb.set_position(new as u64);
         }
 
-        pb.finish_with_message("Unzipped");
-
         Ok(())
     }
 }
@@ -274,7 +272,7 @@ impl Installer {
         Ok(installer)
     }
 
-    pub async fn download_binary(&self, base_path: PathBuf) -> Result<NodeBinary, InstallError> {
+    pub async fn download_binary(&self) -> Result<NodeBinary, InstallError> {
         let link = self.get_installer_link();
 
         let res = CLIENT.get(link.clone()).send().await?;
@@ -282,8 +280,6 @@ impl Installer {
         let total_size = res.content_length().unwrap_or(0);
 
         let pb = init_pb!(total_size, format!("Downloading {}", self.version));
-
-        let path = base_path.join(self.parse_installer());
 
         // download chunks
         // let mut file = File::create(path.clone())?;
@@ -300,8 +296,6 @@ impl Installer {
             downloaded = new;
             pb.set_position(new);
         }
-
-        pb.finish_with_message(format!("Downloaded {} to {}", link, path.display()));
 
         let mut config = crate::consts::CONFIG.lock();
 

@@ -58,20 +58,10 @@ async fn main() -> anyhow::Result<()> {
                     _ => anyhow::bail!("Unexpected version string."),
                 };
 
-                version
-                    .download_binary(std::env::current_dir()?)
-                    .await?
-                    .unzip_file()
-                    .await?;
+                version.download_binary().await?.unzip_file().await?;
             }
         },
     }
-
-    // let cwd = std::env::current_dir().unwrap();
-    // let og = cwd.join("node-v16.16.0-win-x64");
-    // let to = cwd.join("v16-node");
-
-    // std::os::windows::fs::symlink_dir(og, to).unwrap();
 
     Ok(())
 }
