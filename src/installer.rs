@@ -12,6 +12,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use crate::{
     consts::CLIENT,
     helpers::{NoneError, ToError},
+    init_dirs,
     versions::{
         index::{list_index, parse_version, LtsUnion},
         Arch, Version,
@@ -173,8 +174,8 @@ impl NodeBinary {
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {
-        // NOTE: This is temporary until I figure out actual dirs
-        let path = std::env::current_dir().unwrap();
+        let dirs = init_dirs!().unwrap();
+        let path = dirs.data_local_dir().to_path_buf();
 
         let archive = Decompressor::new(self.bytes).decompress_into_mem(path)?;
 
