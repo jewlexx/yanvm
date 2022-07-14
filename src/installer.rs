@@ -13,6 +13,7 @@ use crate::{
     consts::CLIENT,
     helpers::{NoneError, ToError},
     init_dirs,
+    links::symlink_dir,
     versions::{
         index::{list_index, parse_version, LtsUnion},
         Arch, Version,
@@ -164,22 +165,31 @@ impl Decompressor {
 
 pub struct NodeBinary {
     bytes: Cursor<Vec<u8>>,
+    binary_name: String,
 }
 
 impl NodeBinary {
-    pub fn new(bytes: Vec<u8>) -> Self {
+    pub fn new(bytes: Vec<u8>, name: String) -> Self {
         let cursor = Cursor::new(bytes);
 
-        Self { bytes: cursor }
+        Self {
+            bytes: cursor,
+            binary_name: name,
+        }
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {
         let dirs = init_dirs!().to_error()?;
         let path = dirs.data_local_dir().to_path_buf();
 
-        let archive = Decompressor::new(self.bytes).decompress_into_mem(path)?;
+        let archive = Decompressor::new(self.bytes).decompress_into_mem(path.clone())?;
 
         archive.decompress()?;
+
+        let bin_path = path.join(self.binary_name).join("bin");
+        let bin_target_path = path.join("current");
+
+        symlink_dir(bin_path, bin_target_path)?;
 
         Ok(())
     }
@@ -294,7 +304,7 @@ impl Installer {
         config.versions.push(self.version);
         config.save()?;
 
-        Ok(NodeBinary::new(bytes))
+        Ok(NodeBinary::new(bytes, self.parse_installer()))
     }
 }
 
