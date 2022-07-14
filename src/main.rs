@@ -1,4 +1,5 @@
 use clap::{IntoApp, Parser};
+
 use config::Config;
 use installer::Installer;
 
@@ -7,14 +8,19 @@ mod config;
 mod consts;
 mod helpers;
 mod installer;
-mod versions;
 mod links;
+mod versions;
+
+#[macro_use]
+extern crate tracing;
 
 #[macro_use]
 mod macros;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
     let args = args::Args::parse();
 
     if !args.admin && quork::admin::is_admin() {

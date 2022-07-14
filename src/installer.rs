@@ -146,15 +146,13 @@ impl Decompressor {
 
                     match (*entry.header()).entry_type() {
                         tar::EntryType::Directory => final_archive.dirs.push(path),
-                        tar::EntryType::Regular => {
+                        _ => {
                             let mut unpacked: Vec<u8> = Vec::new();
 
                             entry.read_to_end(&mut unpacked)?;
 
                             final_archive.files.push((path, unpacked));
                         },
-                        // TODO: Figure out exactly what types of files will exist in the archive and handle all possibilities.
-                        _ => todo!(),
                     }
                 }
             }
