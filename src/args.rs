@@ -15,7 +15,7 @@ pub enum Commands {
     Install {
         #[clap(
             name = "VERSION",
-            help = "The version to install. [lts or latest act as variables for their respective versions]",
+            help = "The version to install. Possible Formats: lts, latest, vXX.XX.XX",
             default_value = "lts"
         )]
         version_str: String,
