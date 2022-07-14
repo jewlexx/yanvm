@@ -306,7 +306,7 @@ impl Installer {
         config.versions.push(self.version);
         config.save()?;
 
-        Ok(NodeBinary::new(bytes, self.parse_installer()))
+        Ok(NodeBinary::new(bytes, self.parse_installer_no_ext()))
     }
 }
 
