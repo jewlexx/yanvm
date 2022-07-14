@@ -187,6 +187,8 @@ impl NodeBinary {
         let bin_path = path.join(self.binary_name).join("bin");
         let bin_target_path = path.join("current");
 
+        info!("Begining symlink");
+
         symlink_dir(bin_path, bin_target_path)?;
 
         Ok(())
