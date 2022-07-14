@@ -8,6 +8,7 @@ mod consts;
 mod helpers;
 mod installer;
 mod versions;
+mod links;
 
 #[macro_use]
 mod macros;
