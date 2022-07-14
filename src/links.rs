@@ -1,24 +1,25 @@
 use std::io;
-use std::path::Path;
-
-// NOTE: These should only be used to symlink one level directories
-
-#[cfg(windows)]
-pub fn symlink_dir<P>(original: P, target: P)
-where
-    P: AsRef<Path>,
-{
-}
+use std::path::PathBuf;
 
 #[cfg(not(windows))]
-pub fn symlink_dir<P>(original: P, target: P) -> io::Result<()>
-where
-    P: AsRef<Path>,
-{
+fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
     use std::fs::read_dir;
     use std::os::unix::fs::symlink;
 
-    let og_dir = read_dir(original);
+    let og_dir = read_dir(original)?;
+
+    Ok(())
+}
+
+/// Should only be used to symlink one level directories
+pub fn symlink_dir(original: PathBuf, target: PathBuf) -> io::Result<()> {
+    cfg_if::cfg_if! {
+        if #[cfg(windows)] {
+            std::os::windows::fs::symlink_dir(original, target)?;
+        } else {
+            symlink_dir_unix(original, target)?;
+        }
+    }
 
     Ok(())
 }
