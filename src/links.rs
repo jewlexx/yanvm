@@ -8,6 +8,17 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 
     let og_dir = read_dir(original)?;
 
+    for entry in og_dir {
+        let entry = entry?;
+
+        let name = entry.file_name();
+
+        let base_path = entry.path();
+        let target_path = target.join(name);
+
+        symlink(base_path, target_path)?;
+    }
+
     Ok(())
 }
 
