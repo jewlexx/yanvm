@@ -18,6 +18,8 @@ macro_rules! init_pb {
                 .progress_chars("#>-"),
         );
 
+        pb.enable_steady_tick(100);
+
         pb
     }};
 
