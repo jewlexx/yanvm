@@ -174,7 +174,7 @@ impl NodeBinary {
     }
 
     pub async fn unzip_file(self) -> Result<(), InstallError> {
-        let dirs = init_dirs!().unwrap();
+        let dirs = init_dirs!().to_error()?;
         let path = dirs.data_local_dir().to_path_buf();
 
         let archive = Decompressor::new(self.bytes).decompress_into_mem(path)?;
