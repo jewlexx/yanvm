@@ -104,6 +104,8 @@ impl Decompressor {
             if #[cfg(windows)] {
                 let mut unzipped = zip::read::ZipArchive::new(self.bytes)?;
 
+                let pb = init_pb!(unzipped.len() as u64, "Decompressing");
+
                 for i in 0..unzipped.len() {
                     let mut file = unzipped.by_index(i)?;
 
@@ -117,6 +119,8 @@ impl Decompressor {
 
                         final_archive.files.push((path, unpacked));
                     }
+
+                    pb.set_position(min(unzipped.len(), i));
                 }
             } else {
                 cfg_if::cfg_if! {
@@ -130,6 +134,8 @@ impl Decompressor {
                 let mut archive = tar::Archive::new(unzipped);
 
                 let entries = archive.entries()?;
+
+                let pb = init_pb!(entries.len() as u64, "Decompressing");
 
                 for entry in entries {
                     let mut entry = entry.unwrap();
