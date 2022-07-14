@@ -5,6 +5,9 @@ use clap::{Parser, Subcommand};
 pub struct Args {
     #[clap(subcommand)]
     pub command: Option<Commands>,
+
+    #[clap(long, help = "Force running as admin", default_value_t = false)]
+    pub admin: bool,
 }
 
 #[derive(Debug, Subcommand, PartialEq, Eq)]

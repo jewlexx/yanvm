@@ -14,11 +14,11 @@ mod macros;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    if quork::admin::is_admin() {
+    let args = args::Args::parse();
+
+    if !args.admin && quork::admin::is_admin() {
         panic!("Should not be run as admin!");
     }
-
-    let args = args::Args::parse();
 
     // Initialize Global Config
     {
