@@ -30,14 +30,13 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 
 /// Should only be used to symlink one level directories
 pub fn symlink_dir(original: PathBuf, target: PathBuf) -> io::Result<()> {
-    std::fs::create_dir_all(target.clone())?;
-
     cfg_if::cfg_if! {
         if #[cfg(windows)] {
             info!("Symlinking on windows");
             std::os::windows::fs::symlink_dir(original, target)?;
         } else {
             info!("Symlinking on Unix");
+            std::fs::create_dir_all(target.clone())?;
             symlink_dir_unix(original, target)?;
         }
     }
