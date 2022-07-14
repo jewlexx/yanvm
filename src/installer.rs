@@ -135,18 +135,19 @@ impl Decompressor {
 
                 let mut archive = tar::Archive::new(unzipped);
 
-                let entries = archive.entries()?;
+                let mut entries = archive.entries()?.collect::<Result<Vec<_>, _>>()?;
 
-                let total = entires.len();
+                let total = entries.len();
 
                 let pb = init_pb!(total as u64, "Decompressing");
 
-                for entry in entries {
-                    let mut entry = entry.unwrap();
+                for i in 0..total {
+                    let entry = entries.get_mut(i).unwrap();
 
                     let path = path.join(entry.path()?);
+                    let header = entry.header().entry_type().to_owned();
 
-                    match (*entry.header()).entry_type() {
+                    match header {
                         tar::EntryType::Directory => final_archive.dirs.push(path),
                         _ => {
                             let mut unpacked: Vec<u8> = Vec::new();
@@ -157,7 +158,7 @@ impl Decompressor {
                         },
                     }
 
-                    pb.set_position(min(total));
+                    pb.set_position(min(i, total) as u64);
                 }
             }
         }
