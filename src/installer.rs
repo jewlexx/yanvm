@@ -110,8 +110,11 @@ impl Decompressor {
 
                 for i in 0..total {
                     let mut file = unzipped.by_index(i)?;
+                    let file_name = file.enclosed_name().unwrap();
 
-                    let path = path.join(file.enclosed_name().unwrap());
+                    pb.set_message(format!("Decompressing {}", file_name.display()));
+
+                    let path = path.join(file_name);
                     if file.is_dir() {
                         final_archive.dirs.push(path);
                     } else if file.is_file() {
