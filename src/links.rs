@@ -13,10 +13,14 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 
         let name = entry.file_name();
 
-        info!("Symlinking {:?}", name.to_str());
-
         let base_path = entry.path();
         let target_path = target.join(name);
+
+        info!(
+            "Symlinking {} to {}",
+            base_path.display(),
+            target_path.display()
+        );
 
         symlink(base_path, target_path)?;
     }
@@ -26,6 +30,8 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 
 /// Should only be used to symlink one level directories
 pub fn symlink_dir(original: PathBuf, target: PathBuf) -> io::Result<()> {
+    std::fs::create_dir_all(target.clone())?;
+
     cfg_if::cfg_if! {
         if #[cfg(windows)] {
             info!("Symlinking on windows");
