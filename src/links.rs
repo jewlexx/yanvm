@@ -1,3 +1,4 @@
+use std::io;
 use std::path::Path;
 
 // NOTE: These should only be used to symlink one level directories
@@ -10,7 +11,7 @@ where
 }
 
 #[cfg(not(windows))]
-pub fn symlink_dir<P>(original: P, target: P)
+pub fn symlink_dir<P>(original: P, target: P) -> io::Result<()>
 where
     P: AsRef<Path>,
 {
@@ -18,4 +19,6 @@ where
     use std::os::unix::fs::symlink;
 
     let og_dir = read_dir(original);
+
+    Ok(())
 }
