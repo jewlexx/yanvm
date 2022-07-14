@@ -13,6 +13,8 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 
         let name = entry.file_name();
 
+        info!("Symlinking {:?}", name.to_str());
+
         let base_path = entry.path();
         let target_path = target.join(name);
 
@@ -26,8 +28,10 @@ fn symlink_dir_unix(original: PathBuf, target: PathBuf) -> io::Result<()> {
 pub fn symlink_dir(original: PathBuf, target: PathBuf) -> io::Result<()> {
     cfg_if::cfg_if! {
         if #[cfg(windows)] {
+            info!("Symlinking on windows");
             std::os::windows::fs::symlink_dir(original, target)?;
         } else {
+            info!("Symlinking on Unix");
             symlink_dir_unix(original, target)?;
         }
     }

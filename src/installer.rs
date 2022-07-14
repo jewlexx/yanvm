@@ -184,10 +184,12 @@ impl NodeBinary {
 
         archive.decompress()?;
 
-        let bin_path = path.join(self.binary_name).join("bin");
+        let bin_name = self.binary_name.split('.').collect::<Vec<&str>>()[0];
+
+        let bin_path = path.join(bin_name).join("bin");
         let bin_target_path = path.join("current");
 
-        info!("Begining symlink");
+        info!("Begining symlink from {}", bin_path.display());
 
         symlink_dir(bin_path, bin_target_path)?;
 
