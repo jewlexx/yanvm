@@ -23,7 +23,7 @@ macro_rules! init_pb {
 
     ($total:expr, $msg:expr) => {{
         let pb = init_pb!($total);
-        pb.set_message("Unzipping");
+        pb.set_message($msg);
 
         pb
     }};
