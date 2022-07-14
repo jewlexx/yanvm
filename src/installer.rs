@@ -7,12 +7,11 @@ use std::{
 };
 
 use futures_util::StreamExt;
-use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::{
     consts::CLIENT,
     helpers::{NoneError, ToError},
-    init_dirs,
+    init_dirs, init_pb,
     links::symlink_dir,
     versions::{
         index::{list_index, parse_version, LtsUnion},
@@ -55,14 +54,7 @@ impl Archive {
     pub fn decompress(self) -> std::io::Result<()> {
         let total = self.total_len();
 
-        // Indicatif setup
-        let pb = ProgressBar::new(total as u64);
-        pb.set_style(
-            ProgressStyle::default_bar()
-                .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}]")
-                .progress_chars("#>-"),
-        );
-        pb.set_message("Unzipping");
+        let pb = init_pb!(total as u64, "Unzipping");
 
         let mut extracted = 0;
 
@@ -272,12 +264,7 @@ impl Installer {
 
         let total_size = res.content_length().unwrap_or(0);
 
-        // Indicatif setup
-        let pb = ProgressBar::new(total_size);
-        pb.set_style(ProgressStyle::default_bar()
-        .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
-        .progress_chars("#>-"));
-        pb.set_message(format!("Downloading {}", self.version));
+        let pb = init_pb!(total_size, format!("Downloading {}", self.version));
 
         let path = base_path.join(self.parse_installer());
 
