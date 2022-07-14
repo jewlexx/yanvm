@@ -6,7 +6,7 @@ pub struct Args {
     #[clap(subcommand)]
     pub command: Option<Commands>,
 
-    #[clap(long, help = "Force running as admin", default_value_t = false)]
+    #[clap(long, help = "Force running as admin")]
     pub admin: bool,
 }
 
