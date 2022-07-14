@@ -230,16 +230,16 @@ impl Installer {
         )
     }
 
-    pub fn parse_installer(&self) -> String {
-        let (os, ext) = crate::consts::OS_STR;
+    pub fn parse_installer_no_ext(&self) -> String {
+        let os = crate::consts::OS_STR.0;
 
-        format!(
-            "node-{}-{os}-{}.{ext}",
-            self.version,
-            self.arch,
-            os = os,
-            ext = ext
-        )
+        format!("node-{}-{}-{}", self.version, os, self.arch)
+    }
+
+    pub fn parse_installer(&self) -> String {
+        let ext = crate::consts::OS_STR.1;
+
+        format!("{}.{}", self.parse_installer_no_ext(), ext)
     }
 
     pub async fn lts_version() -> Result<Self, InstallError> {
