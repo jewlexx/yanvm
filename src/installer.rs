@@ -137,7 +137,9 @@ impl Decompressor {
 
                 let entries = archive.entries()?;
 
-                let pb = init_pb!(entries.len() as u64, "Decompressing");
+                let total = entires.len();
+
+                let pb = init_pb!(total as u64, "Decompressing");
 
                 for entry in entries {
                     let mut entry = entry.unwrap();
@@ -154,6 +156,8 @@ impl Decompressor {
                             final_archive.files.push((path, unpacked));
                         },
                     }
+
+                    pb.set_position(min(total));
                 }
             }
         }
