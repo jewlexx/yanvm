@@ -25,7 +25,7 @@ thiserror = "1.0.31"
 tokio = { version = "1.20.0", features = ["full"] }
 toml = "0.5.9"
 tracing = "0.1.35"
-tracing-subscriber = "0.3.14"
+tracing-subscriber = "0.3.15"
 
 [target.'cfg(windows)'.dependencies]
 zip = "0.6.2"
