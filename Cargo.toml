@@ -9,7 +9,7 @@ description = "A NodeJS version manager"
 [dependencies]
 anyhow = "1.0.58"
 cfg-if = "1.0.0"
-clap = { version = "3.2.12", features = ["derive"] }
+clap = { version = "3.2.20", features = ["derive"] }
 dialoguer = "0.10.1"
 directories = "4.0.1"
 futures-util = "0.3.21"
