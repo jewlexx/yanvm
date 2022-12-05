@@ -13,7 +13,7 @@ clap = { version = "3.2.12", features = ["derive"] }
 dialoguer = "0.10.1"
 directories = "4.0.1"
 futures-util = "0.3.21"
-indicatif = "0.16.2"
+indicatif = "0.17.2"
 lazy_static = "1.4.0"
 parking_lot = "0.12.1"
 quork = "0.1.1"
