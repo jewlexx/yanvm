@@ -38,4 +38,4 @@ jobs:
         with:
           command: test
 
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
